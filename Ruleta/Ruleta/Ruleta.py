@@ -1,7 +1,2 @@
-
-print ("hola mundo")
-
-print ("hola")
-
-
-print ("chau")
+import random
+import matplotlib.pyplot as plt

@@ -7,6 +7,17 @@ class Funciones:
             sum += lista[i]
         return sum
 
+    def graficar(self, lista):
+        sum = 0
+        ejex = []
+        ejey = []
+        for i in range (0, len(lista)):
+            sum += lista[i]
+            ejex.append(i+1)
+            ejey.append(sum/(i+1))
+        plt.plot(ejex,ejey, 'r')
+        plt.show()
+
 class Ruleta:
     obj = Funciones()
     list = []
@@ -17,3 +28,4 @@ class Ruleta:
         print(sum/i)
     print("Resultado final: ")
     print(obj.suma(list)/i)
+    obj.graficar(list)

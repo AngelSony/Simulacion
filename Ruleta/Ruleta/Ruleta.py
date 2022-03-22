@@ -62,4 +62,6 @@ def estilos(axs):
     axs[1,1].set_title('Varianza')
     axs[1,1].set_ylim([0,200])
     axs[1,1].set(xlabel='n', ylabel='vv')
+
+
 main()

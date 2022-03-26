@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 colores = ["red", "green", "yellow", "blue", "purple", "black"]
-muestras, nroTiradas = 5, 999
+muestras, nroTiradas = 5, 9999
 ejex = [(i+1) for i in range(nroTiradas)]
 fig, axs = plt.subplots(2,2)
 tiradas = [[] for j in range(muestras)]
@@ -27,7 +27,7 @@ def graficar(j):
         fRelativa[j].append((sum/(i+1)))
         promedio[j].append(np.mean(tiradas[j]))
         desvio[j].append(np.std(tiradas[j]))
-        varianza[j].append(np.var(tiradas[j]))
+        varianza[j].append(np.square(desvio[j][i]))
     axs[0,1].plot(ejex, promedio[j], colores[j])
     axs[0,0].plot(ejex, fRelativa[j], colores[j])
     axs[1,0].plot(ejex, desvio[j], colores[j])
@@ -62,6 +62,5 @@ def estilos(axs):
     axs[1,1].set_title('Varianza')
     axs[1,1].set_ylim([0,200])
     axs[1,1].set(xlabel='n', ylabel='vv')
-
 
 main()

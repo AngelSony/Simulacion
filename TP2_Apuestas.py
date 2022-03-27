@@ -3,37 +3,35 @@ import matplotlib.pyplot as plt
 import os
 
 class Constant:
-    NROTIRADAS = 100
+    NROTIRADAS = 10000
     MUESTRAS = 5
-    APUESTAINICIAL = 1
+    APUESTAINICIAL = 10
 
 colores = ["red", "green", "yellow", "blue", "purple", "black"]
-ejex = [(i+1) for i in range(Constant.NROTIRADAS)]
-
-FibonacciInf = [[] for j in range(Constant.MUESTRAS)]
 DAlembertInf = [[] for j in range(Constant.MUESTRAS)]
-MartingalaFin = [[] for j in range(Constant.MUESTRAS)]
-FibonacciFin = [[] for j in range(Constant.MUESTRAS)]
 DAlembertFin = [[] for j in range(Constant.MUESTRAS)]
 
 def main():
     op1 = menu()
     op2 = menu2()
-    if op1 == 1 and op2==1:
-        cargaMartingala()
-    elif op1 == 2 and op2==1:
-        for j in range(Constant.MUESTRAS):
-            cargaFibonacciInf(j)
-        graficar(FibonacciInf, "Fibonacci")
-    elif op1 == 3 and op2 == 1:
-        for j in range(Constant.MUESTRAS):
-            cargaDAlembertInf(j)
-        graficar(DAlembertInf, "D'Alembert")
-    elif op1 == 1 and op2==2:
-        capital = int(input('ingrese el capital con el que quiere iniciar: '))
-        for j in range(Constant.MUESTRAS):
-            cargaMartingalaFin(j, capital)
-        graficar(MartingalaFin, "Martingala")
+    if(op1 == 1):
+        if(op2 == 1):
+            Martingala()
+        elif(op2 == 2):
+            dineroTotal = int(input('ingrese el capital con el que quiere iniciar: '))
+            Martingala(dineroTotal)
+    elif op1 == 2:
+        if(op2 == 1):
+            Fibonacci()
+        elif(op2 == 2):
+            dineroTotal = int(input('ingrese el capital con el que quiere iniciar: '))
+            Fibonacci(dineroTotal)
+    elif op1 == 3:
+        if(op2 == 1):
+            DAlembert()
+        elif(op2 == 2):
+            dineroTotal = int(input('ingrese el capital con el que quiere iniciar: '))
+            DAlembert(dineroTotal)
     plt.show()
 
 def menu2():
@@ -65,82 +63,116 @@ def menu():
         else:
             break
     return op
-def cargaMartingala():
+
+def Martingala(dineroTotal = None):
     fig, axs = plt.subplots(1,2)
     fig.suptitle("Martingala")
-    Martingala= [[] for j in range(Constant.MUESTRAS)]
+    Apuestas = [[] for j in range(Constant.MUESTRAS)]
+    Frecuencia = [[] for j in range(Constant.MUESTRAS)]
     for j in range(Constant.MUESTRAS):
-        ejexx = []
-        capital = 0
+        if(dineroTotal == None):
+            capital = 0
+        else:
+            capital = dineroTotal
+        ejex = []
+        ganadas = 0
         valorApuesta = Constant.APUESTAINICIAL
         for i in range(Constant.NROTIRADAS):
-            ejexx.append(i+1)
+            ejex.append(i+1)
             apuesta = np.random.randint(0,1)
             tirada = np.random.randint(0,36)
             if(calculaResultado(apuesta, tirada)):
                 capital += valorApuesta
                 valorApuesta = Constant.APUESTAINICIAL
+                ganadas += 1
             else:
                 capital -= valorApuesta
                 valorApuesta = valorApuesta*2
-            Martingala[j].append(capital)
-        axs[1].plot(ejexx, Martingala[j], colores[j])
+            Apuestas[j].append(capital)
+            Frecuencia[j].append(ganadas/(i+1))
+            if(dineroTotal != None):
+                if(capital == 0):
+                    break
+                elif(capital < valorApuesta):
+                    valorApuesta = capital
+        axs[0].plot(ejex, Frecuencia[j], colores[j])
+        axs[1].plot(ejex, Apuestas[j], colores[j])
 
-def cargaMartingalaFin(j, cap):
-    perdidas=0
-    for i in range(Constant.NROTIRADAS):
-        apuesta = np.random.randint(0, 1)
-        tirada = np.random.randint(0, 36)
-        if (cap >= Constant.APUESTAINICIAL):
-
-            if (calculaResultado(apuesta, tirada)):
-                cap += Constant.APUESTAINICIAL * (2 ** perdidas)
-                perdidas = 0
-            else:
-                cap -= Constant.APUESTAINICIAL * (2 ** perdidas)
-                perdidas += 1
+def Fibonacci(dineroTotal = None):
+    fig, axs = plt.subplots(1,2)
+    fig.suptitle("Fibonacci")
+    Apuestas = [[] for j in range(Constant.MUESTRAS)]
+    Frecuencia = [[] for j in range(Constant.MUESTRAS)]
+    for j in range(Constant.MUESTRAS):
+        if(dineroTotal == None):
+            capital = 0
         else:
-            if (calculaResultado(apuesta, tirada)):
-                cap += cap
-                perdidas = 0
+            capital = dineroTotal
+        ejex = []
+        valorApuesta = Constant.APUESTAINICIAL
+        fibo = 1
+        ganadas = 0
+        for i in range(Constant.NROTIRADAS):
+            ejex.append(i+1)
+            apuesta = np.random.randint(0,1)
+            tirada = np.random.randint(0,36)
+            if(calculaResultado(apuesta, tirada)):
+                capital += valorApuesta
+                if(fibo < 3):
+                    fibo = 1
+                else:
+                    fibo -= 2
+                ganadas += 1
             else:
-                cap -= cap
-                perdidas += 1
-                break
-        MartingalaFin[j].append(cap)
+                capital -= valorApuesta
+                fibo += 1
+            valorApuesta = Constant.APUESTAINICIAL*fib(fibo)
+            Apuestas[j].append(capital)
+            Frecuencia[j].append(ganadas/(i+1))
+            if(dineroTotal != None):
+                if(capital == 0):
+                    break
+                elif(capital < valorApuesta):
+                    valorApuesta = capital
+        axs[0].plot(ejex, Frecuencia[j], colores[j])
+        axs[1].plot(ejex, Apuestas[j], colores[j])
 
-
-def cargaFibonacciInf(j):
-    capital = 0
-    fibo = 1
-    for i in range(Constant.NROTIRADAS):
-        apuesta = np.random.randint(0,1)
-        tirada = np.random.randint(0,36)
-        if(calculaResultado(apuesta, tirada)):
-            capital += Constant.APUESTAINICIAL*(fib(fibo))
-            if(fibo < 3):
-                fibo = 1
+def DAlembert(dineroTotal = None):
+    fig, axs = plt.subplots(1,2)
+    fig.suptitle("D'Alembert")
+    Apuestas = [[] for j in range(Constant.MUESTRAS)]
+    Frecuencia = [[] for j in range(Constant.MUESTRAS)]
+    for j in range(Constant.MUESTRAS):
+        if(dineroTotal == None):
+            capital = 0
+        else:
+            capital = dineroTotal
+        ejex = []
+        valorApuesta = Constant.APUESTAINICIAL
+        ganadas = 0
+        for i in range(Constant.NROTIRADAS):
+            ejex.append(i+1)
+            apuesta = np.random.randint(0,1)
+            tirada = np.random.randint(0,36)
+            if(calculaResultado(apuesta, tirada)):
+                capital += valorApuesta
+                if(valorApuesta <= Constant.APUESTAINICIAL):
+                    valorApuesta = Constant.APUESTAINICIAL
+                else:
+                    valorApuesta -= Constant.APUESTAINICIAL
+                ganadas += 1
             else:
-                fibo -= 2
-        else:
-            capital -= Constant.APUESTAINICIAL*(fib(fibo))
-            fibo += 1
-        FibonacciInf[j].append(capital)
-
-def cargaDAlembertInf(j):
-    capital = 0
-    valorApuesta = Constant.APUESTAINICIAL
-    for i in range(Constant.NROTIRADAS):
-        apuesta = np.random.randint(0,1)
-        tirada = np.random.randint(0,36)
-        if(calculaResultado(apuesta, tirada)):
-            capital += valorApuesta
-            if(valorApuesta > Constant.APUESTAINICIAL):
-                valorApuesta -= Constant.APUESTAINICIAL
-        else:
-            capital -= valorApuesta
-            valorApuesta += Constant.APUESTAINICIAL
-        DAlembertInf[j].append(capital)
+                capital -= valorApuesta
+                valorApuesta += Constant.APUESTAINICIAL
+            Apuestas[j].append(capital)
+            Frecuencia[j].append(ganadas/(i+1))
+            if(dineroTotal != None):
+                if(capital == 0):
+                    break
+                elif(capital < valorApuesta):
+                    valorApuesta = capital
+        axs[0].plot(ejex, Frecuencia[j], colores[j])
+        axs[1].plot(ejex, Apuestas[j], colores[j])
 
 def calculaResultado(apuesta, tirada):
     if(tirada == 0):

@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 class Constant:
     NROTIRADAS = 10000
@@ -8,21 +9,65 @@ class Constant:
 
 colores = ["red", "green", "yellow", "blue", "purple", "black"]
 ejex = [(i+1) for i in range(Constant.NROTIRADAS)]
-Martingala = [[] for j in range(Constant.MUESTRAS)]
-Fibonacci = [[] for j in range(Constant.MUESTRAS)]
-DAlembert = [[] for j in range(Constant.MUESTRAS)]
+MartingalaInf = [[] for j in range(Constant.MUESTRAS)]
+FibonacciInf = [[] for j in range(Constant.MUESTRAS)]
+DAlembertInf = [[] for j in range(Constant.MUESTRAS)]
+MartingalaFin = [[] for j in range(Constant.MUESTRAS)]
+FibonacciFin = [[] for j in range(Constant.MUESTRAS)]
+DAlembertFin = [[] for j in range(Constant.MUESTRAS)]
 
 def main():
-    for j in range(Constant.MUESTRAS):
-        cargaMartingala(j)
-        cargaFibonacci(j)
-        cargaDAlembert(j)
-    graficar(Martingala, "Martingala")
-    graficar(Fibonacci, "Fibonacci")
-    graficar(DAlembert, "D'Alembert")
+    op1 = menu()
+    op2 = menu2()
+    if op1 == 1 and op2==1:
+        for j in range(Constant.MUESTRAS):
+            cargaMartingalaInf(j)
+        graficar(MartingalaInf, "Martingala")
+    elif op1 == 2 and op2==1:
+        for j in range(Constant.MUESTRAS):
+            cargaFibonacciInf(j)
+        graficar(FibonacciInf, "Fibonacci")
+    elif op1 == 3 and op2 == 1:
+        for j in range(Constant.MUESTRAS):
+            cargaDAlembertInf(j)
+        graficar(DAlembertInf, "D'Alembert")
+    elif op1 == 1 and op2==2:
+        capital = int(input('ingrese el capital con el que quiere iniciar: '))
+        for j in range(Constant.MUESTRAS):
+            cargaMartingalaFin(j, capital)
+        graficar(MartingalaFin, "Martingala")
     plt.show()
 
-def cargaMartingala(j):
+def menu2():
+    os.system('cls')
+    print("***SELECCIONA UN TIPO DE CAPITAL PARA LA SIMULACION***")
+    print("1 - Capital infinito")
+    print("2 - Capital acotado")
+    print("0 - Salir")
+    while True:
+        op = int(input("Ingrese su opción:  "))
+        if op < 0 or op > 2:
+            print("Debes ingresar un número comprendido entre 0 y 3")
+        else:
+            break
+    return op
+
+def menu():
+    os.system('cls')
+    print("*** MENU DE OPCIONES ***")
+    print("Selecciona una opción")
+    print("1 - Martingala")
+    print("2 - Fibonacci")
+    print("3 - D'Alambert")
+    print("0 - Salir")
+    while True:
+        op = int(input("Ingrese su opción:  "))
+        if op < 0 or op > 3:
+            print("Debes ingresar un número comprendido entre 0 y 3")
+        else:
+            break
+    return op
+def cargaMartingalaInf(j):
     capital = 0
     perdidas = 0
     for i in range(Constant.NROTIRADAS):
@@ -34,9 +79,32 @@ def cargaMartingala(j):
         else:
             capital -= Constant.APUESTAINICIAL*(2**perdidas)
             perdidas += 1
-        Martingala[j].append(capital)
+        MartingalaInf[j].append(capital)
+def cargaMartingalaFin(j, cap):
+    perdidas=0
+    for i in range(Constant.NROTIRADAS):
+        apuesta = np.random.randint(0, 1)
+        tirada = np.random.randint(0, 36)
+        if (cap >= Constant.APUESTAINICIAL):
 
-def cargaFibonacci(j):
+            if (calculaResultado(apuesta, tirada)):
+                cap += Constant.APUESTAINICIAL * (2 ** perdidas)
+                perdidas = 0
+            else:
+                cap -= Constant.APUESTAINICIAL * (2 ** perdidas)
+                perdidas += 1
+        else:
+            if (calculaResultado(apuesta, tirada)):
+                cap += cap
+                perdidas = 0
+            else:
+                cap -= cap
+                perdidas += 1
+                break
+        MartingalaFin[j].append(cap)
+
+
+def cargaFibonacciInf(j):
     capital = 0
     fibo = 1
     for i in range(Constant.NROTIRADAS):
@@ -51,9 +119,9 @@ def cargaFibonacci(j):
         else:
             capital -= Constant.APUESTAINICIAL*(fib(fibo))
             fibo += 1
-        Fibonacci[j].append(capital)
+        FibonacciInf[j].append(capital)
 
-def cargaDAlembert(j):
+def cargaDAlembertInf(j):
     capital = 0
     valorApuesta = Constant.APUESTAINICIAL
     for i in range(Constant.NROTIRADAS):
@@ -66,7 +134,7 @@ def cargaDAlembert(j):
         else:
             capital -= valorApuesta
             valorApuesta += Constant.APUESTAINICIAL
-        DAlembert[j].append(capital)
+        DAlembertInf[j].append(capital)
 
 def calculaResultado(apuesta, tirada):
     if(tirada == 0):

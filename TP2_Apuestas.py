@@ -80,7 +80,7 @@ def Martingala(dineroTotal = None):
         for i in range(Constant.NROTIRADAS):
             ejex.append(i+1)
             apuesta = np.random.randint(0,1)
-            tirada = np.random.randint(0,36)
+            tirada = np.random.randint(0,37)
             if(calculaResultado(apuesta, tirada)):
                 capital += valorApuesta
                 valorApuesta = Constant.APUESTAINICIAL
@@ -115,7 +115,7 @@ def Fibonacci(dineroTotal = None):
         for i in range(Constant.NROTIRADAS):
             ejex.append(i+1)
             apuesta = np.random.randint(0,1)
-            tirada = np.random.randint(0,36)
+            tirada = np.random.randint(0,37)
             if(calculaResultado(apuesta, tirada)):
                 capital += valorApuesta
                 if(fibo < 3):
@@ -153,7 +153,7 @@ def DAlembert(dineroTotal = None):
         for i in range(Constant.NROTIRADAS):
             ejex.append(i+1)
             apuesta = np.random.randint(0,1)
-            tirada = np.random.randint(0,36)
+            tirada = np.random.randint(0,37)
             if(calculaResultado(apuesta, tirada)):
                 capital += valorApuesta
                 if(valorApuesta <= Constant.APUESTAINICIAL):

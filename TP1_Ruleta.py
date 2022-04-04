@@ -1,77 +1,102 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import statistics as stat
 
-colores = ["r-", "g-", "y-", "b-", "c-", "k:"]
+class Constant:
+    NROTIRADAS = 9999
+    PROMEDIO = 18
+    VARIANZA = 114
+    DESVIO_ESTANDAR = np.sqrt(VARIANZA)
+
+ValoresRuleta = [[x for x in range(36)]] 
+Colores = ["r-", "g-", "y-", "b-", "c-", "k:"]
 Participantes =["Hernan","Bruno","Angel","Maxi","Ova"]
-muestras, nroTiradas = 5, 9999
-ejex = [(i+1) for i in range(nroTiradas)]
+Cantidad_Muestras = len(Participantes)
+Valores_Estadisticos = [[0,0,0,0,0] for r in range(Cantidad_Muestras+1)]
+Eje_x = [(i+1) for i in range(Constant.NROTIRADAS)]
 fig, axs = plt.subplots(2,2)
-tiradas = [[] for j in range(muestras)]
-fRelativa = [[] for j in range(muestras + 1)]
-promedio = [[] for j in range(muestras + 1)]
-desvio = [[] for j in range(muestras + 1)]
-varianza = [[] for j in range(muestras + 1)]
+Tiradas = [[] for j in range(Cantidad_Muestras)]
+fRelativa = [[] for j in range(Cantidad_Muestras + 1)]
+Promedio = [[] for j in range(Cantidad_Muestras + 1)]
+Desvio = [[] for j in range(Cantidad_Muestras + 1)]
+Varianza = [[] for j in range(Cantidad_Muestras + 1)]
 
 def main():
-    for j in range(muestras):
-        Graficar(j)
+    for j in range(Cantidad_Muestras):
+        Muestreo(j)
+    Graficar()
     Promedios()
+    Tabla()
     plt.show()
 
-def Graficar(j):
-    fig.suptitle("10.000 tiradas de ruleta para 5 jugadores en simultaneo")
-    sum = 0
-    accum = 0
-    global PromedioReal
-    global DesvioFinal
-    global VarianzaFinal
-    global DesFinal
-    global VarFinal
-    DesvioFinal  = np.arange(1, nroTiradas+1)
-    VarianzaFinal = np.arange(1, nroTiradas+1)
-    DesFinal = 0
-    VarFinal = 0
+def Tabla():
+    Estadisticos = ["fA(X)","fR(X) (%)","Media","Desvío","Varianza"]
+    Cantidad_Columnas = len(Estadisticos)
+    Participantes.append("Promedios")
     
-    for i in range (nroTiradas):
-        tiradas[j].append(np.random.randint(0,37))
-        accum += tiradas[j][i]
-        if(tiradas[j][i] == 12): #El programa está determinado para estudiar la aparicion del numero 12
+    fig, ax = plt.subplots() 
+    ax.set_axis_off() 
+    table = ax.table( 
+        cellText = Valores_Estadisticos,  
+        rowLabels = Participantes,  
+        colLabels = Estadisticos, 
+        rowColours =["tab:red", "tab:green","tab:olive","tab:blue","tab:cyan","tab:gray"],
+        colColours =["palegreen"] * Cantidad_Columnas, 
+        cellLoc ='center',  
+        loc ='upper left')         
+   
+    ax.set_title('Estadísticos de '+ str(Cantidad_Muestras)+' jugadores en '+str(Constant.NROTIRADAS+1)+' tiradas', fontweight ="bold") 
+
+def Muestreo(j):
+    sum = 0
+    cont = 0
+    for i in range (Constant.NROTIRADAS):
+        tirada = np.random.randint(0,37)
+        cont += tirada
+        Tiradas[j].append(tirada)
+        if(Tiradas[j][i] == 12): #El programa está determinado para estudiar la aparicion del numero 12
             sum += 1
         fRelativa[j].append((sum/(i+1)))
-        promedio[j].append(accum/(i+1))
-        if (i == 9998):
-            DesFinal =  np.std(tiradas[j])
-            desvio[j].append(DesFinal)
-            VarFinal = np.square(desvio[j][i])
-            varianza[j].append(np.square(desvio[j][i]))
-        else:
-            desvio[j].append(np.std(tiradas[j]))
-            varianza[j].append(np.square(desvio[j][i]))
-            
-    PromedioReal = np.ones(nroTiradas) * ((36 - 0) / 2) #(ValorMaximo - ValorMinimo) / 2
-    VarianzaFinal = np.ones(nroTiradas) * VarFinal
-    DesvioFinal =  np.ones(nroTiradas) * DesFinal
-    axs[0,0].plot(ejex, fRelativa[j], colores[j], label = Participantes[j])
-    axs[0,1].plot(ejex, promedio[j], colores[j], label = Participantes[j])
-    axs[1,0].plot(ejex, desvio[j], colores[j], label = Participantes[j])
-    axs[1,1].plot(ejex, varianza[j], colores[j], label = Participantes[j])
-    AplicarEstilo(axs)
+        Promedio[j].append(cont/(i+1))
+        Desvio[j].append(np.std(Tiradas[j]))
+        Varianza[j].append(np.square(Desvio[j][i]))
+        if (i == Constant.NROTIRADAS-1):
+            Valores_Estadisticos[j][0] = sum
+            Valores_Estadisticos[j][1] = round(fRelativa[j][i] * 100,2)
+            Valores_Estadisticos[j][2] = round(Promedio[j][i],2)
+            Valores_Estadisticos[j][3] = round(Desvio[j][i],4)
+            Valores_Estadisticos[j][4] = round(Varianza[j][i],4)
+
+def Graficar():
+    fig.suptitle("10.000 Tiradas de ruleta para 5 jugadores en simultaneo")
+    for j in range (Cantidad_Muestras):      
+        axs[0,0].plot(Eje_x, fRelativa[j], Colores[j], label = Participantes[j])
+        axs[0,1].plot(Eje_x, Promedio[j], Colores[j], label = Participantes[j])
+        axs[1,0].plot(Eje_x, Desvio[j], Colores[j], label = Participantes[j])
+        axs[1,1].plot(Eje_x, Varianza[j], Colores[j], label = Participantes[j])
+        AplicarEstilo(axs)
 
 def Promedios():
     fig, axs = plt.subplots(2,2)
-    fig.suptitle("Promedio de las 5 muestras de 10.000 tiradas")
-    for i in range(nroTiradas):
-        fRelativa[muestras].append(np.mean([fRelativa[j][i] for j in range(muestras)]))
-        promedio[muestras].append(np.mean([promedio[j][i] for j in range(muestras)]))
-        desvio[muestras].append(np.mean([desvio[j][i] for j in range(muestras)]))
-        varianza[muestras].append(np.mean([varianza[j][i] for j in range(muestras)]))
-    axs[0,0].plot(ejex, fRelativa[muestras], colores[5], label="Frecuencia de aciertos promedio de los 5 jugadores")
-    axs[0,1].plot(ejex, promedio[muestras], colores[5], label="Promedio de los valores promedio de los 5 jugadores en la n-ésima jugada")
-    axs[0,1].plot(ejex, PromedioReal, colores[0], label="Promedio Real / Esperado: "+str((36 - 0) / 2))
-    axs[1,0].plot(ejex, desvio[muestras], colores[5], label="Desvio promedio de los 5 jugadores en la n-ésima jugada")
-    axs[1,0].plot(ejex, DesvioFinal, colores[0], label="Desvio Real / Esperado: "+str(round(DesFinal,2)))
-    axs[1,1].plot(ejex, varianza[muestras], colores[5], label="Varianza promedio de los 5 jugadores en la n-ésima jugada")
-    axs[1,1].plot(ejex, VarianzaFinal, colores[0], label="Varianza Real / Esperado: "+str(round(VarFinal,2)))
+    fig.suptitle("Promedio de las 5 Cantidad_Muestras de 10.000 Tiradas")
+    for i in range(Constant.NROTIRADAS):
+        fRelativa[Cantidad_Muestras].append(np.mean([fRelativa[j][i] for j in range(Cantidad_Muestras)]))
+        Promedio[Cantidad_Muestras].append(np.mean([Promedio[j][i] for j in range(Cantidad_Muestras)]))
+        Desvio[Cantidad_Muestras].append(np.mean([Desvio[j][i] for j in range(Cantidad_Muestras)]))
+        Varianza[Cantidad_Muestras].append(np.mean([Varianza[j][i] for j in range(Cantidad_Muestras)]))
+        if (i == Constant.NROTIRADAS-1):
+            Valores_Estadisticos[Cantidad_Muestras][0] = round(fRelativa[Cantidad_Muestras][i] * (Constant.NROTIRADAS+1),2)
+            Valores_Estadisticos[Cantidad_Muestras][1] = round(fRelativa[Cantidad_Muestras][i] * 100,2)
+            Valores_Estadisticos[Cantidad_Muestras][2] = round(Promedio[Cantidad_Muestras][i],2)
+            Valores_Estadisticos[Cantidad_Muestras][3] = round(Desvio[Cantidad_Muestras][i],4)
+            Valores_Estadisticos[Cantidad_Muestras][4] = round(Varianza[Cantidad_Muestras][i],4)
+    axs[0,0].plot(Eje_x, fRelativa[Cantidad_Muestras], Colores[5], label="Frecuencia de aciertos Promedio de los 5 jugadores")
+    axs[0,1].plot(Eje_x, Promedio[Cantidad_Muestras], Colores[5], label="Promedio de los valores Promedio de los 5 jugadores en la n-ésima jugada")
+    axs[0,1].hlines(Constant.PROMEDIO, 0, Constant.NROTIRADAS, "red", label="Valor Esperado: "+str(Constant.PROMEDIO))
+    axs[1,0].plot(Eje_x, Desvio[Cantidad_Muestras], Colores[5], label="Desvio Promedio de los 5 jugadores en la n-ésima jugada")
+    axs[1,0].hlines(Constant.DESVIO_ESTANDAR, 0, Constant.NROTIRADAS, "red", label="Desvio Estándar Esperado: "+str(round(Constant.DESVIO_ESTANDAR,2)))
+    axs[1,1].plot(Eje_x, Varianza[Cantidad_Muestras], Colores[5], label="Varianza Promedio de los 5 jugadores en la n-ésima jugada")
+    axs[1,1].hlines(Constant.VARIANZA, 0, Constant.NROTIRADAS, "red", label="Varianza Esperada: "+str(Constant.VARIANZA))
     AplicarEstiloPromedio(axs)
 
 def AplicarEstilo(axs):

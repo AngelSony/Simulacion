@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import statistics as stat
 
 class Constant:
     NROTIRADAS = 9999

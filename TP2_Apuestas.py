@@ -4,8 +4,8 @@ import os
 
 class Constant:
     NROTIRADAS = 10000
-    MUESTRAS = 30
-    APUESTAINICIAL = 10
+    MUESTRAS = 100
+    APUESTAINICIAL = 1
 
 colores = ["red", "green", "yellow", "blue", "purple", "cyan"]
 
@@ -98,8 +98,8 @@ def Martingala(dineroTotal = None):
                     break
                 elif(capital < valorApuesta):
                     valorApuesta = capital
-        axs[0].plot(ejex, Frecuencia[j], colores[j%6], alpha = 0.75, linewidth = 0.75)
-        axs[1].plot(ejex, Apuestas[j], colores[j%6], alpha = 0.75, linewidth = 0.75)
+        axs[0].plot(ejex, Frecuencia[j], colores[j%6], alpha = 0.75, linewidth = 0.5)
+        axs[1].plot(ejex, Apuestas[j], colores[j%6], alpha = 0.75, linewidth = 0.5)
     Promedio(Apuestas, Frecuencia, axs)
 
 def Fibonacci(dineroTotal = None):

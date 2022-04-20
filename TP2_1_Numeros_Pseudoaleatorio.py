@@ -2,6 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
+class Constant:
+    CANT_VALORES = 10000
+
 def main():
     while True:
         opcion = menu()
@@ -9,19 +12,19 @@ def main():
         if opcion == 1:
             print("Mid Square")
             seed = int(input('Ingrese valor de la semilla: '))
-            mid_square(seed,1000)
+            mid_square(seed,Constant.CANT_VALORES)
         elif opcion == 2:
             print("rand")
             max_rand_value = (2**31) - 1
             rand_argument = 7**5
             seed = np.random.randint(0,max_rand_value)
-            rand(seed,1500,max_rand_value,rand_argument)
+            rand(seed,Constant.CANT_VALORES,max_rand_value,rand_argument)
         elif opcion == 3:
             print("RANDU")
             seed = int(input('Ingrese valor de la semilla: '))
             max_RANDU_value = (2**31)
             RANDU_argument = (2**16)+3
-            RANDU(seed,1500,max_RANDU_value,RANDU_argument)
+            RANDU(seed,Constant.CANT_VALORES,max_RANDU_value,RANDU_argument)
         elif opcion == 0:
             break
 
@@ -38,7 +41,7 @@ def mid_square(seed,n):
             str_value = '0' + str_value
             len_value += 1
         Seeds.append(seed)
-        Values.append(str_value)
+        Values.append(int_value)
         next_seed = str_value[2:6]
         seed = int(next_seed)
         i += 1
@@ -47,7 +50,9 @@ def mid_square(seed,n):
     plt.xlabel("N-ésimo valor generado")
     plt.ylabel("Valor generado")
     plt.plot(Eje_X, Values, '-o', linewidth = 1, color = 'blue', alpha=0.5)
-    
+    y_sm, y_std = lowess(np.array(Eje_X), np.array(Values), f=1./5.)
+    # plot it
+    plt.plot(Eje_X, y_sm, color='white', label='LOWESS', linewidth = 1.5)
 
     plt.figure("Mid square semilla-valor")
     plt.xlabel("Semilla")
@@ -61,7 +66,7 @@ def rand(seed,n,max_rand_value,rand_argument):
     Values = []
     Eje_X = []
     Seeds.append(seed)
-    Values.append(int(seed)/max_rand_value)
+    Values.append(seed/max_rand_value)
     Eje_X.append(1)
     i= 1
     while i < n:
@@ -73,9 +78,9 @@ def rand(seed,n,max_rand_value,rand_argument):
     plt.xlabel("N-ésimo valor generado")
     plt.ylabel("Valor generado")
     plt.plot(Eje_X, Values, 'o', linewidth = 1, color = 'red', alpha=0.5)
-    y_sm, y_std = lowess(Eje_X, Values, f=1./5.)
+    y_sm, y_std = lowess(np.array(Eje_X), np.array(Values), f=1./5.)
     # plot it
-    plt.plot(Eje_X, y_sm, color='withe', label='LOWESS')
+    plt.plot(Eje_X, y_sm, color='white', label='LOWESS', linewidth = 1.5)
     
 
     plt.figure("rand semilla-valor")
@@ -102,6 +107,9 @@ def RANDU(seed,n,max_RANDU_value,RANDU_argument):
     plt.xlabel("N-ésimo valor generado")
     plt.ylabel("Valor generado")
     plt.plot(Eje_X, Values, 'o', linewidth = 1, color = 'green', alpha=0.5)
+    y_sm, y_std = lowess(np.array(Eje_X), np.array(Values), f=1./5.)
+    # plot it
+    plt.plot(Eje_X, y_sm, color='white', label='LOWESS', linewidth = 1.5)
     
     plt.figure("RANDU semilla-valor")
     plt.xlabel("Semilla")
@@ -120,7 +128,7 @@ def lowess(x, y, f=1./3.):
             so linear smoother.
     """
     # get some paras
-    xwidth = f*1500 #f*(x.max()-x.min()) # effective width after reduction factor
+    xwidth = f*(x.max()-x.min()) # effective width after reduction factor
     N = len(x) # number of obs
     # Don't assume the data is sorted
     order = np.argsort(x)

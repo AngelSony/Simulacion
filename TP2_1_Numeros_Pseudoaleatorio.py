@@ -1,58 +1,46 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-seed = ''
-Seeds = []
-Values = []
-Eje_X = []
-Seeds.clear
-Values.clear
-Eje_X.clear
+
 def main():
-    opcion = -1
-    while opcion != 0:
+    while True:
+        opcion = menu()
         os.system("cls")
-        print("Seleccione algoritmo:")
-        print("1 - Parte media del cuadrado (Von Neuman)")
-        print("2 - rand (MatLab - GCL)")
-        print("3 - RANDU (GCL)")
-        print("0 - Salir")
-        opcion = input('Opcion: ')
-        if   opcion == '1':
+        if opcion == 1:
             print("Mid Square")
-            os.system("cls")
-            seed = input('Ingrese valor de la semilla: ')
+            seed = int(input('Ingrese valor de la semilla: '))
             mid_square(seed,1000)
-        elif opcion == '2':
+        elif opcion == 2:
             print("rand")
             max_rand_value = (2**31) - 1
             rand_argument = 7**5
             seed = np.random.randint(0,max_rand_value)
             rand(seed,1500,max_rand_value,rand_argument)
-        elif opcion == '3':
-            os.system("cls")
+        elif opcion == 3:
             print("RANDU")
-            seed = input('Ingrese valor de la semilla: ')
+            seed = int(input('Ingrese valor de la semilla: '))
             max_RANDU_value = (2**31)
             RANDU_argument = (2**16)+3
-            RANDU(int(seed),1500,max_RANDU_value,RANDU_argument)
-        elif opcion == '0':
-            exit
+            RANDU(seed,1500,max_RANDU_value,RANDU_argument)
+        elif opcion == 0:
+            break
 
 def mid_square(seed,n):
-    int_seed = int(seed)
+    Seeds = []
+    Values = []
+    Eje_X = []
     i = 0
-    while i < n and int_seed != 0:
-        int_value = int_seed**2
+    while i < n and seed != 0:
+        int_value = seed**2
         str_value = str(int_value)
         len_value = len(str_value)
         while len_value < 8:
             str_value = '0' + str_value
             len_value += 1
-        Seeds.append(int_seed)
+        Seeds.append(seed)
         Values.append(str_value)
         next_seed = str_value[2:6]
-        int_seed = int(next_seed)
+        seed = int(next_seed)
         i += 1
         Eje_X.append(i+1)
     plt.figure("Mid square n-valor")
@@ -69,6 +57,9 @@ def mid_square(seed,n):
     plt.show()
 
 def rand(seed,n,max_rand_value,rand_argument):
+    Seeds = []
+    Values = []
+    Eje_X = []
     Seeds.append(seed)
     Values.append(int(seed)/max_rand_value)
     Eje_X.append(1)
@@ -95,6 +86,9 @@ def rand(seed,n,max_rand_value,rand_argument):
     plt.show()
 
 def RANDU(seed,n,max_RANDU_value,RANDU_argument):
+    Seeds = []
+    Values = []
+    Eje_X = []
     Seeds.append(seed)
     Values.append(seed/max_RANDU_value)
     Eje_X.append(1)
@@ -154,5 +148,20 @@ def lowess(x, y, f=1./3.):
         # Calculate the standard error
         y_stderr[place] = np.sqrt(sigma2 * A[i].dot(np.linalg.inv(ATA)).dot(A[i]))
     return y_sm, y_stderr
+
+def menu():
+    os.system("cls")
+    print("Seleccione algoritmo:")
+    print("1 - Parte media del cuadrado (Von Neuman)")
+    print("2 - rand (MatLab - GCL)")
+    print("3 - RANDU (GCL)")
+    print("0 - Salir")
+    while True:
+        op = int(input("Opción:  "))
+        if op < 0 or op > 3:
+            print("Debe ingresar un número comprendido entre 0 y 3")
+        else:
+            break
+    return op
 
 main()

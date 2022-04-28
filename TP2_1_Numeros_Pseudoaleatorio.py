@@ -2,6 +2,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
+#https://support.minitab.com/es-mx/minitab/18/help-and-how-to/statistics/nonparametrics/how-to/runs-test/methods-and-formulas/methods-and-formulas/
+#https://prezi.com/s5dlkuvrozou/prueba-de-corridas/?frame=dd00b164abe52ef88a7fd8f342c7ef1224f017e1
+
 class Constant:
     CANT_VALORES = 10000
 
@@ -51,7 +54,6 @@ def mid_square(seed,n):
     plt.ylabel("Valor generado")
     plt.plot(Eje_X, Values, '-o', linewidth = 1, color = 'blue', alpha=0.5)
     y_sm, y_std = lowess(np.array(Eje_X), np.array(Values), f=1./5.)
-    # plot it
     plt.plot(Eje_X, y_sm, color='white', label='LOWESS', linewidth = 1.5)
 
     plt.figure("Mid square semilla-valor")
@@ -79,7 +81,6 @@ def rand(seed,n,max_rand_value,rand_argument):
     plt.ylabel("Valor generado")
     plt.plot(Eje_X, Values, 'o', linewidth = 1, color = 'red', alpha=0.5)
     y_sm, y_std = lowess(np.array(Eje_X), np.array(Values), f=1./5.)
-    # plot it
     plt.plot(Eje_X, y_sm, color='white', label='LOWESS', linewidth = 1.5)
     
 
@@ -108,7 +109,6 @@ def RANDU(seed,n,max_RANDU_value,RANDU_argument):
     plt.ylabel("Valor generado")
     plt.plot(Eje_X, Values, 'o', linewidth = 1, color = 'green', alpha=0.5)
     y_sm, y_std = lowess(np.array(Eje_X), np.array(Values), f=1./5.)
-    # plot it
     plt.plot(Eje_X, y_sm, color='white', label='LOWESS', linewidth = 1.5)
     
     plt.figure("RANDU semilla-valor")
@@ -119,41 +119,24 @@ def RANDU(seed,n,max_RANDU_value,RANDU_argument):
     plt.show()
 
 def lowess(x, y, f=1./3.):
-    """
-    Basic LOWESS smoother with uncertainty. 
-    Note:
-        - Not robust (so no iteration) and
-             only normally distributed errors. 
-        - No higher order polynomials d=1 
-            so linear smoother.
-    """
-    # get some paras
-    xwidth = f*(x.max()-x.min()) # effective width after reduction factor
-    N = len(x) # number of obs
-    # Don't assume the data is sorted
+    xwidth = f*(x.max()-x.min())
+    N = len(x)
     order = np.argsort(x)
-    # storage
     y_sm = np.zeros_like(y)
     y_stderr = np.zeros_like(y)
-    # define the weigthing function -- clipping too!
     tricube = lambda d : np.clip((1- np.abs(d)**3)**3, 0, 1)
-    # run the regression for each observation i
     for i in range(N):
         dist = np.abs((x[order][i]-x[order]))/xwidth
         w = tricube(dist)
-        # form linear system with the weights
         A = np.stack([w, x[order]*w]).T
         b = w * y[order]
         ATA = A.T.dot(A)
         ATb = A.T.dot(b)
-        # solve the syste
         sol = np.linalg.solve(ATA, ATb)
-        # predict for the observation only
-        yest = A[i].dot(sol)# equiv of A.dot(yest) just for k
+        yest = A[i].dot(sol)
         place = order[i]
         y_sm[place]=yest 
         sigma2 = (np.sum((A.dot(sol) -y [order])**2)/N )
-        # Calculate the standard error
         y_stderr[place] = np.sqrt(sigma2 * A[i].dot(np.linalg.inv(ATA)).dot(A[i]))
     return y_sm, y_stderr
 

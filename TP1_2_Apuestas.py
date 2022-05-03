@@ -4,35 +4,38 @@ import os
 
 class Constant:
     NROTIRADAS = 10000
-    MUESTRAS = 5
-    APUESTAINICIAL = 10
+    MUESTRAS = 100
+    APUESTAINICIAL = 1
 
-colores = ["red", "green", "yellow", "blue", "purple", "black"]
-DAlembertInf = [[] for j in range(Constant.MUESTRAS)]
-DAlembertFin = [[] for j in range(Constant.MUESTRAS)]
+colores = ["red", "green", "yellow", "blue", "purple", "cyan"]
 
 def main():
-    op1 = menu()
-    op2 = menu2()
-    if(op1 == 1):
-        if(op2 == 1):
-            Martingala()
-        elif(op2 == 2):
-            dineroTotal = int(input('ingrese el capital con el que quiere iniciar: '))
-            Martingala(dineroTotal)
-    elif op1 == 2:
-        if(op2 == 1):
-            Fibonacci()
-        elif(op2 == 2):
-            dineroTotal = int(input('ingrese el capital con el que quiere iniciar: '))
-            Fibonacci(dineroTotal)
-    elif op1 == 3:
-        if(op2 == 1):
-            DAlembert()
-        elif(op2 == 2):
-            dineroTotal = int(input('ingrese el capital con el que quiere iniciar: '))
-            DAlembert(dineroTotal)
-    plt.show()
+    while True:
+        os.system('cls')
+        op1 = menu()
+        if(op1 == 0):
+            break
+        os.system('cls')
+        op2 = menu2()
+        if(op1 == 1):
+            if(op2 == 1):
+                Martingala()
+            elif(op2 == 2):
+                dineroTotal = int(input('ingrese el capital con el que quiere iniciar: '))
+                Martingala(dineroTotal)
+        elif op1 == 2:
+            if(op2 == 1):
+                Fibonacci()
+            elif(op2 == 2):
+                dineroTotal = int(input('ingrese el capital con el que quiere iniciar: '))
+                Fibonacci(dineroTotal)
+        elif op1 == 3:
+            if(op2 == 1):
+                DAlembert()
+            elif(op2 == 2):
+                dineroTotal = int(input('ingrese el capital con el que quiere iniciar: '))
+                DAlembert(dineroTotal)
+        plt.show()
 
 def menu2():
     os.system('cls')
@@ -67,8 +70,8 @@ def menu():
 def Martingala(dineroTotal = None):
     fig, axs = plt.subplots(1,2)
     fig.suptitle("Martingala")
-    Apuestas = [[] for j in range(Constant.MUESTRAS)]
-    Frecuencia = [[] for j in range(Constant.MUESTRAS)]
+    Apuestas = [[] for j in range(Constant.MUESTRAS + 1)]
+    Frecuencia = [[] for j in range(Constant.MUESTRAS + 1)]
     for j in range(Constant.MUESTRAS):
         if(dineroTotal == None):
             capital = 0
@@ -95,14 +98,15 @@ def Martingala(dineroTotal = None):
                     break
                 elif(capital < valorApuesta):
                     valorApuesta = capital
-        axs[0].plot(ejex, Frecuencia[j], colores[j])
-        axs[1].plot(ejex, Apuestas[j], colores[j])
+        axs[0].plot(ejex, Frecuencia[j], colores[j%6], alpha = 0.75, linewidth = 0.5)
+        axs[1].plot(ejex, Apuestas[j], colores[j%6], alpha = 0.75, linewidth = 0.5)
+    Promedio(Apuestas, Frecuencia, axs)
 
 def Fibonacci(dineroTotal = None):
     fig, axs = plt.subplots(1,2)
     fig.suptitle("Fibonacci")
-    Apuestas = [[] for j in range(Constant.MUESTRAS)]
-    Frecuencia = [[] for j in range(Constant.MUESTRAS)]
+    Apuestas = [[] for j in range(Constant.MUESTRAS + 1)]
+    Frecuencia = [[] for j in range(Constant.MUESTRAS + 1)]
     for j in range(Constant.MUESTRAS):
         if(dineroTotal == None):
             capital = 0
@@ -134,14 +138,16 @@ def Fibonacci(dineroTotal = None):
                     break
                 elif(capital < valorApuesta):
                     valorApuesta = capital
-        axs[0].plot(ejex, Frecuencia[j], colores[j])
-        axs[1].plot(ejex, Apuestas[j], colores[j])
+        axs[0].plot(ejex, Frecuencia[j], colores[j%6], alpha = 0.75, linewidth = 0.75)
+        axs[1].plot(ejex, Apuestas[j], colores[j%6], alpha = 0.75, linewidth = 0.75)
+    Promedio(Apuestas, Frecuencia, axs)
+        
 
 def DAlembert(dineroTotal = None):
     fig, axs = plt.subplots(1,2)
     fig.suptitle("D'Alembert")
-    Apuestas = [[] for j in range(Constant.MUESTRAS)]
-    Frecuencia = [[] for j in range(Constant.MUESTRAS)]
+    Apuestas = [[] for j in range(Constant.MUESTRAS + 1)]
+    Frecuencia = [[] for j in range(Constant.MUESTRAS + 1)]
     for j in range(Constant.MUESTRAS):
         if(dineroTotal == None):
             capital = 0
@@ -171,8 +177,26 @@ def DAlembert(dineroTotal = None):
                     break
                 elif(capital < valorApuesta):
                     valorApuesta = capital
-        axs[0].plot(ejex, Frecuencia[j], colores[j])
-        axs[1].plot(ejex, Apuestas[j], colores[j])
+        axs[0].plot(ejex, Frecuencia[j], colores[j%6], alpha = 0.75, linewidth = 0.75)
+        axs[1].plot(ejex, Apuestas[j], colores[j%6], alpha = 0.75, linewidth = 0.75)
+    Promedio(Apuestas, Frecuencia, axs)
+
+def Promedio(Apuestas, Frecuencia, axs):
+    ejex =[]
+    for i in range(Constant.NROTIRADAS):
+        ejex.append(i+1)
+        Frecuencia[Constant.MUESTRAS].append(np.mean([Frecuencia[j][i] if (len(Frecuencia[j]) > i) else (18/37) for j in range(Constant.MUESTRAS)]))
+        Apuestas[Constant.MUESTRAS].append(np.mean([Apuestas[j][i] if (len(Apuestas[j]) > i) else 0 for j in range(Constant.MUESTRAS)]))
+        if(i>100 and Apuestas[Constant.MUESTRAS][i] == 0):
+            break
+    axs[0].plot(ejex, Frecuencia[Constant.MUESTRAS], "black", label="Promedio", linewidth = 3)
+    axs[0].legend(loc='upper right')
+    axs[0].set_title('Frecuencia Relativa de Aciertos en N cantidad de tiradas')
+    axs[0].set(xlabel='Cantidad de Tiradas', ylabel='Frecuencia Relativa')
+    axs[1].plot(ejex, Apuestas[Constant.MUESTRAS], "black", label="Promedio", linewidth = 3)
+    axs[1].legend(loc='upper right')
+    axs[1].set_title('Capital Disponible en N cantidad de tiradas')
+    axs[1].set(xlabel='Cantidad de Tiradas', ylabel='Capital Disponible')
 
 def calculaResultado(apuesta, tirada):
     if(tirada == 0):

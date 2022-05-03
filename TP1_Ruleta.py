@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 class Constant:
-    NROTIRADAS = 9999
+    NROTIRADAS = 4999
     PROMEDIO = 18
     VARIANZA = 114
     DESVIO_ESTANDAR = np.sqrt(VARIANZA)

@@ -3,6 +3,8 @@ import matplotlib.pyplot as plt
 import os
 import math
 import random
+import pandas as pd
+import scipy.stats as ss
 
 #https://support.minitab.com/es-mx/minitab/18/help-and-how-to/statistics/nonparametrics/how-to/runs-test/methods-and-formulas/methods-and-formulas/
 #https://prezi.com/s5dlkuvrozou/prueba-de-corridas/?frame=dd00b164abe52ef88a7fd8f342c7ef1224f017e1
@@ -35,6 +37,22 @@ def main():
             Python(Constant.CANT_VALORES)
         elif opcion == 0:
             break
+
+def menu():
+    os.system("cls")
+    print("Seleccione algoritmo:")
+    print("1 - Parte media del cuadrado (Von Neuman)")
+    print("2 - rand (MatLab - GCL)")
+    print("3 - RANDU (GCL)")
+    print("4 - Python")
+    print("0 - Salir")
+    while True:
+        op = int(input("Opción:  "))
+        if op < 0 or op > 4:
+            print("Debe ingresar un número comprendido entre 0 y 4")
+        else:
+            break
+    return op
 
 def mid_square(seed,n):
     Seeds = []
@@ -124,6 +142,9 @@ def Python(n):
     Test(Values)
     plt.show()
         
+
+
+
 def lowess(x, y, f=1./3.):
     xwidth = f*(x.max()-x.min())
     N = len(x)
@@ -146,22 +167,6 @@ def lowess(x, y, f=1./3.):
         y_stderr[place] = np.sqrt(sigma2 * A[i].dot(np.linalg.inv(ATA)).dot(A[i]))
     return y_sm, y_stderr
 
-def menu():
-    os.system("cls")
-    print("Seleccione algoritmo:")
-    print("1 - Parte media del cuadrado (Von Neuman)")
-    print("2 - rand (MatLab - GCL)")
-    print("3 - RANDU (GCL)")
-    print("4 - Python")
-    print("0 - Salir")
-    while True:
-        op = int(input("Opción:  "))
-        if op < 0 or op > 4:
-            print("Debe ingresar un número comprendido entre 0 y 4")
-        else:
-            break
-    return op
-
 def TestChiCuad(Values):
     print("Test de bondad Chi Cuadrado")
     observado=[]
@@ -179,7 +184,7 @@ def TestChiCuad(Values):
         x2+=(((observado[i]-esperado)**2)/esperado)
     print("X2 = "+ str(x2))   
 
-def testCorridas(Values):
+def TestCorridas(Values):
     print("Test de Corridas: ")
     x = []
     a = 1
@@ -198,7 +203,7 @@ def testCorridas(Values):
     z = (a-media)/desviacion
     print("Z <= "+ str(z))        
 
-def testArribaAbajo(Values):
+def TestArribaAbajo(Values):
     print("Test arriba y abajo : ")
     x = []
     corridas = 1
@@ -236,9 +241,75 @@ def testArribaAbajo(Values):
     z = (corridas-media)/desviacion
     print("Z <=" + str(z) )
 
+def TestBondad(Values):
+    print('TIRADAS: ', Constant.CANT_VALORES)
+    m=int(np.sqrt(Constant.CANT_VALORES))
+    print('M: ',m)
+    
+    intervalos=[]
+ 
+    for i in range(m+1):
+        intervalo=i/m
+        intervalos.append(intervalo)
+ 
+    division = pd.cut(Values, bins=intervalos)
+    
+    oi = division.value_counts().reindex().tolist()
+    ei = []
+ 
+    for i in range(len(oi)):
+        resultado = int(Constant.CANT_VALORES/m)
+        ei.append(resultado)
+ 
+    print('INTERVALOS: ', intervalos)
+    print('FRECUENCIA OBSERVADA: ', oi)
+    print('FRECUENCIA ESPERADA: ', ei)
+ 
+    grados_libertad = m-1
+ 
+    chicuadrado(oi,ei,grados_libertad)
+    kolmogorovSmirnov(Values)
+
+def chicuadrado(oi,ei, grados_libertad):
+    print('\n#### CHI CUADRADO ####')
+ 
+ 
+    sumatoria = []
+ 
+    for i in range(len(oi)):
+        resultado = ((np.square(oi[i]-ei[i]))/ei[i])
+        sumatoria.append(resultado)
+ 
+    resultado_chi2=np.sum(sumatoria)
+ 
+    print('RESULTADO DE CHI CUADRADO (z): ',resultado_chi2)
+ 
+    tabla_chi2=ss.chi2.isf(0.05, grados_libertad)
+ 
+    print('{0} < {1}'.format(resultado_chi2, tabla_chi2))
+    if (resultado_chi2 < tabla_chi2):
+        print('LOS NUMEROS SON INDEPENDIENTES.\n')
+    else:
+        print('LOS NUMEROS NO SON INDEPENDIENTES.\n')
+
+def kolmogorovSmirnov(numeros_generados):
+    print('\n#### KOLMOGOROV-SMIRNOV ####')
+    media, desviacion = ss.norm.fit(numeros_generados)
+ 
+    kstest = ss.kstest(numeros_generados,"norm",args=(media,desviacion))
+ 
+    significacion = (1-kstest.pvalue/100)
+    print('NIVEL DE SIGNIFICACION: ', significacion,'%')
+ 
+    if kstest.pvalue < 0.01:
+        print('LOS NUMEROS SON INDEPENDIENTES.\n')
+    else:
+        print('LOS NUMEROS NO SON INDEPENDIENTES.\n')
+
 def Test(Values):
     TestChiCuad(Values)
-    testCorridas(Values)
-    testArribaAbajo(Values)
+    TestCorridas(Values)
+    TestArribaAbajo(Values)
+    TestBondad(Values)
 
 main()

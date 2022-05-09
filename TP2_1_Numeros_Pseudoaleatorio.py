@@ -1,6 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import math
+import random
 
 #https://support.minitab.com/es-mx/minitab/18/help-and-how-to/statistics/nonparametrics/how-to/runs-test/methods-and-formulas/methods-and-formulas/
 #https://prezi.com/s5dlkuvrozou/prueba-de-corridas/?frame=dd00b164abe52ef88a7fd8f342c7ef1224f017e1
@@ -28,6 +30,9 @@ def main():
             max_RANDU_value = (2**31)
             RANDU_argument = (2**16)+3
             RANDU(seed,Constant.CANT_VALORES,max_RANDU_value,RANDU_argument)
+        elif opcion == 4:
+            print("Python")
+            Python(Constant.CANT_VALORES)
         elif opcion == 0:
             break
 
@@ -55,12 +60,7 @@ def mid_square(seed,n):
     plt.plot(Eje_X, Values, '-o', linewidth = 1, color = 'blue', alpha=0.5)
     y_sm, y_std = lowess(np.array(Eje_X), np.array(Values), f=1./5.)
     plt.plot(Eje_X, y_sm, color='white', label='LOWESS', linewidth = 1.5)
-
-    plt.figure("Mid square semilla-valor")
-    plt.xlabel("Semilla")
-    plt.ylabel("Valor generado por semilla")
-    plt.plot(Seeds, Values, 'o', linewidth = 1, color = 'blue', alpha=0.5)
-    
+    Test(Values)
     plt.show()
 
 def rand(seed,n,max_rand_value,rand_argument):
@@ -82,13 +82,7 @@ def rand(seed,n,max_rand_value,rand_argument):
     plt.plot(Eje_X, Values, 'o', linewidth = 1, color = 'red', alpha=0.5)
     y_sm, y_std = lowess(np.array(Eje_X), np.array(Values), f=1./5.)
     plt.plot(Eje_X, y_sm, color='white', label='LOWESS', linewidth = 1.5)
-    
-
-    plt.figure("rand semilla-valor")
-    plt.xlabel("Semilla")
-    plt.ylabel("Valor generado por semilla")
-    plt.plot(Seeds, Values, 'o', linewidth = 1, color = 'red', alpha=0.5)
-    
+    Test(Values)
     plt.show()
 
 def RANDU(seed,n,max_RANDU_value,RANDU_argument):
@@ -110,14 +104,26 @@ def RANDU(seed,n,max_RANDU_value,RANDU_argument):
     plt.plot(Eje_X, Values, 'o', linewidth = 1, color = 'green', alpha=0.5)
     y_sm, y_std = lowess(np.array(Eje_X), np.array(Values), f=1./5.)
     plt.plot(Eje_X, y_sm, color='white', label='LOWESS', linewidth = 1.5)
-    
-    plt.figure("RANDU semilla-valor")
-    plt.xlabel("Semilla")
-    plt.ylabel("Valor generado por semilla")
-    plt.plot(Seeds, Values, 'o', linewidth = 1, color = 'green', alpha=0.5)
-    
+    Test(Values)
     plt.show()
 
+def Python(n):
+    Values = []
+    Eje_X = []
+    i= 1
+    while i < n:
+        Values.append(random.random())
+        i += 1
+        Eje_X.append(i)
+    plt.figure("Pyhton n-valor")
+    plt.xlabel("N-ésimo valor generado")
+    plt.ylabel("Valor generado")
+    plt.plot(Eje_X, Values, 'o', linewidth = 1, color = 'green', alpha=0.5)
+    y_sm, y_std = lowess(np.array(Eje_X), np.array(Values), f=1./5.)
+    plt.plot(Eje_X, y_sm, color='white', label='LOWESS', linewidth = 1.5)
+    Test(Values)
+    plt.show()
+        
 def lowess(x, y, f=1./3.):
     xwidth = f*(x.max()-x.min())
     N = len(x)
@@ -146,13 +152,93 @@ def menu():
     print("1 - Parte media del cuadrado (Von Neuman)")
     print("2 - rand (MatLab - GCL)")
     print("3 - RANDU (GCL)")
+    print("4 - Python")
     print("0 - Salir")
     while True:
         op = int(input("Opción:  "))
-        if op < 0 or op > 3:
-            print("Debe ingresar un número comprendido entre 0 y 3")
+        if op < 0 or op > 4:
+            print("Debe ingresar un número comprendido entre 0 y 4")
         else:
             break
     return op
+
+def TestChiCuad(Values):
+    print("Test de bondad Chi Cuadrado")
+    observado=[]
+    esperado=1500
+    c=0.1
+    for i in range (10):
+        x =0
+        for j in range (len(Values)):
+            if  (c-0.1)<=float(Values[j])<=c:
+                x+=1
+        observado.append(x)
+        c+=0.1
+    x2=0
+    for i in range(len(observado)):
+        x2+=(((observado[i]-esperado)**2)/esperado)
+    print("X2 = "+ str(x2))   
+
+def testCorridas(Values):
+    print("Test de Corridas: ")
+    x = []
+    a = 1
+    for i in range(len(Values)-1):
+        if Values[i+1] >= Values[i]:
+            x.append("+")
+        elif(Values[i+1] <Values[i]):
+            x.append("-")
+
+    for i in range(1, len(x)):
+        if (x[i] != x[i-1]):
+            a += 1
+    n = len(x)
+    media = (2*n-1)/3
+    desviacion = math.sqrt((16*n-29)/90)
+    z = (a-media)/desviacion
+    print("Z <= "+ str(z))        
+
+def testArribaAbajo(Values):
+    print("Test arriba y abajo : ")
+    x = []
+    corridas = 1
+    contmas = 0
+    contmenos = 0
+    u=[]
+    
+    for i in range(len(Values)-1):
+        u.append(float(Values[i]))
+    med=np.mean(u)
+
+    for i in range(len(u)):
+        if u[i] >= med:
+            x.append("+")
+        elif(u[i] < med):
+            x.append("-")
+
+    for i in range(1, len(x)):
+        if (x[i] != x[i-1]):
+            corridas += 1
+
+    if  (x[0]=="+"):
+        contmas+=1
+    else:
+        contmenos+=1
+    for i in range(1,len(x)):
+        if(x[i] == "+"):
+            contmas += 1
+        else:
+            contmenos += 1
+
+    n = contmas+contmenos
+    media = ((2*contmenos*contmas)/(contmas+contmenos))+1
+    desviacion = math.sqrt(((2*contmenos*contmas*(2*contmas*contmenos-n))/((n**2)*(n-1))))
+    z = (corridas-media)/desviacion
+    print("Z <=" + str(z) )
+
+def Test(Values):
+    TestChiCuad(Values)
+    testCorridas(Values)
+    testArribaAbajo(Values)
 
 main()

@@ -423,7 +423,6 @@ def Poker(Values):
     chicuadrado(oi, ei, grados_libertad)
 
 def Test(Values):
-    TestChiCuad(Values)
     TestCorridas(Values)
     TestArribaAbajo(Values)
     TestBondad(Values)

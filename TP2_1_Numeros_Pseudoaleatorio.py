@@ -167,23 +167,6 @@ def lowess(x, y, f=1./3.):
         y_stderr[place] = np.sqrt(sigma2 * A[i].dot(np.linalg.inv(ATA)).dot(A[i]))
     return y_sm, y_stderr
 
-def TestChiCuad(Values):
-    print("Test de bondad Chi Cuadrado")
-    observado=[]
-    esperado=1500
-    c=0.1
-    for i in range (10):
-        x =0
-        for j in range (len(Values)):
-            if  (c-0.1)<=float(Values[j])<=c:
-                x+=1
-        observado.append(x)
-        c+=0.1
-    x2=0
-    for i in range(len(observado)):
-        x2+=(((observado[i]-esperado)**2)/esperado)
-    print("X2 = "+ str(x2))   
-
 def TestCorridas(Values):
     print("Test de Corridas: ")
     x = []
@@ -292,11 +275,11 @@ def chicuadrado(oi,ei, grados_libertad):
     else:
         print('LOS NUMEROS NO SON INDEPENDIENTES.\n')
 
-def kolmogorovSmirnov(numeros_generados):
+def kolmogorovSmirnov(Values):
     print('\n#### KOLMOGOROV-SMIRNOV ####')
-    media, desviacion = ss.norm.fit(numeros_generados)
+    media, desviacion = ss.norm.fit(Values)
  
-    kstest = ss.kstest(numeros_generados,"norm",args=(media,desviacion))
+    kstest = ss.kstest(Values,"norm",args=(media,desviacion))
  
     significacion = (1-kstest.pvalue/100)
     print('NIVEL DE SIGNIFICACION: ', significacion,'%')
@@ -306,10 +289,144 @@ def kolmogorovSmirnov(numeros_generados):
     else:
         print('LOS NUMEROS NO SON INDEPENDIENTES.\n')
 
+def Poker(Values):
+    lista = []
+    TD=0
+    P1=0
+    P2=0
+    TP=0
+    T=0
+    P=0
+    Q=0
+ 
+    for i in Values:
+        resultado = np.around(i,5)
+        lista.append(resultado)
+ 
+    for i in lista:
+        numero=i
+        decimal = str(numero-int(numero))[2:].zfill(5)
+        
+        A=None
+        B=None
+        C=None
+        D=None
+        E=None
+        
+        decimal_resultado = []
+        counter = 0
+        for j in decimal:
+            counter = counter+1
+            if counter <= 5:
+                if (A!=None):
+                    if(j==A):
+                        decimal_resultado.append('A')
+                        continue
+                else:
+                    A=j
+                    decimal_resultado.append('A')
+                    continue
+                
+                if (B!=None):
+                    if(j==B):
+                        decimal_resultado.append('B')
+                        continue
+                else:
+                    B=j
+                    decimal_resultado.append('B')
+                    continue
+ 
+                if (C!=None):
+                    if(j==C):
+                        decimal_resultado.append('C')
+                        continue
+                else:
+                    C=j
+                    decimal_resultado.append('C')
+                    continue
+ 
+                if (D!=None):
+                    if(j==D):
+                        decimal_resultado.append('D')
+                        continue
+                else:
+                    D=j
+                    decimal_resultado.append('D')
+                    continue
+ 
+                if (E!=None):
+                    if(j==E):
+                        decimal_resultado.append('E')
+                        continue
+                else:
+                    E=j
+                    decimal_resultado.append('E')
+                    continue
+        
+        cant_A = 0
+        cant_B = 0
+        cant_C = 0
+        cant_D = 0
+        cant_E = 0
+ 
+        for x in decimal_resultado:
+            if(x=='A'):
+                cant_A = cant_A+1
+            elif(x=='B'):
+                cant_B = cant_B+1
+            elif(x=='C'):
+                cant_C = cant_C+1
+            elif(x=='D'):
+                cant_D = cant_D+1
+            elif(x=='E'):
+                cant_E = cant_E+1
+ 
+        frecuencia = [cant_A,cant_B,cant_C,cant_D,cant_E]        
+ 
+        frecuencia.sort(reverse=True)
+ 
+        
+        if(frecuencia==[1,1,1,1,1]):
+            #TODOS DISTINTOS
+            TD = TD+1
+        elif(frecuencia==[2,1,1,1,0]):
+            #PAR
+            P1 = P1+1
+        elif(frecuencia==[2,2,1,0,0]):
+            #2 PARES
+            P2 = P2+1
+        elif(frecuencia==[3,1,1,0,0]):
+            #TERCIA
+            T = T+1
+        elif(frecuencia==[3,2,0,0,0]):
+            #TERCIA Y PAR
+            TP = TP+1
+        elif(frecuencia==[4,1,0,0,0]):
+            #POKER
+            P = P+1
+        elif(frecuencia==[5,0,0,0,0]):
+            #QUINTINA
+            Q = Q+1        
+    
+    probabilidades = [0.3025,0.504,0.108,0.009,0.072,0.0045,0.0001]
+    ei=[]
+ 
+    for i in probabilidades:
+        resultado = i*100
+        ei.append(np.round(resultado,2))
+        
+    oi = [TD,P1,P2,T,TP,P,Q]
+    print('Ei: ', ei)
+    print('Oi: ', oi)
+ 
+    grados_libertad = int(input('Ingrese grados de libertad: '))
+    chicuadrado(oi, ei, grados_libertad)
+
 def Test(Values):
     TestChiCuad(Values)
     TestCorridas(Values)
     TestArribaAbajo(Values)
     TestBondad(Values)
+    Poker(Values)
 
 main()

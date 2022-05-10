@@ -270,8 +270,6 @@ def TestBondad(Values):
     chicuadrado(oi,ei,grados_libertad)
     kolmogorovSmirnov(Values)
 
-#Ver video https://www.youtube.com/watch?v=tsYM0un-q3w (Y luego borrar esto)
-
 def chicuadrado(oi,ei, grados_libertad):
     print('\n#### CHI CUADRADO ####')
  

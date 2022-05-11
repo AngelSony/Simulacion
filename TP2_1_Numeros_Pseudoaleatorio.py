@@ -6,9 +6,6 @@ import random
 import pandas as pd
 import scipy.stats as ss
 
-#https://support.minitab.com/es-mx/minitab/18/help-and-how-to/statistics/nonparametrics/how-to/runs-test/methods-and-formulas/methods-and-formulas/
-#https://prezi.com/s5dlkuvrozou/prueba-de-corridas/?frame=dd00b164abe52ef88a7fd8f342c7ef1224f017e1
-
 class Constant:
     CANT_VALORES = 10000
 
@@ -168,7 +165,7 @@ def lowess(x, y, f=1./3.):
     return y_sm, y_stderr
 
 def TestCorridas(Values):
-    print("Test de Corridas: ")
+    print("\nTest de Corridas Sube/Baja: ")
     x = []
     a = 1
     for i in range(len(Values)-1):
@@ -187,7 +184,7 @@ def TestCorridas(Values):
     print("Z <= "+ str(z))        
 
 def TestArribaAbajo(Values):
-    print("Test arriba y abajo : ")
+    print("\nTest de Corrida Arriba/Abajo: ")
     x = []
     corridas = 1
     contmas = 0
@@ -222,10 +219,9 @@ def TestArribaAbajo(Values):
     media = ((2*contmenos*contmas)/(contmas+contmenos))+1
     desviacion = math.sqrt(((2*contmenos*contmas*(2*contmas*contmenos-n))/((n**2)*(n-1))))
     z = (corridas-media)/desviacion
-    print("Z <=" + str(z) )
+    print("Z <= " + str(z) )
 
 def TestBondad(Values):
-    print('TIRADAS: ', Constant.CANT_VALORES)
     m=int(np.sqrt(Constant.CANT_VALORES))
     print('M: ',m)
     
@@ -243,20 +239,14 @@ def TestBondad(Values):
     for i in range(len(oi)):
         resultado = int(Constant.CANT_VALORES/m)
         ei.append(resultado)
- 
-    print('INTERVALOS: ', intervalos)
-    print('FRECUENCIA OBSERVADA: ', oi)
-    print('FRECUENCIA ESPERADA: ', ei)
- 
+
     grados_libertad = m-1
  
     chicuadrado(oi,ei,grados_libertad)
     kolmogorovSmirnov(Values)
 
 def chicuadrado(oi,ei, grados_libertad):
-    print('\n#### CHI CUADRADO ####')
- 
- 
+    print('\nTest de Bondad Chi Cuadrado: ')
     sumatoria = []
  
     for i in range(len(oi)):
@@ -265,167 +255,33 @@ def chicuadrado(oi,ei, grados_libertad):
  
     resultado_chi2=np.sum(sumatoria)
  
-    print('RESULTADO DE CHI CUADRADO (z): ',resultado_chi2)
+    print('Z <= ',resultado_chi2)
  
     tabla_chi2=ss.chi2.isf(0.05, grados_libertad)
  
     print('{0} < {1}'.format(resultado_chi2, tabla_chi2))
     if (resultado_chi2 < tabla_chi2):
-        print('LOS NUMEROS SON INDEPENDIENTES.\n')
+        print('Los números son independientes.\n')
     else:
-        print('LOS NUMEROS NO SON INDEPENDIENTES.\n')
+        print('Los números No son independientes.\n')
 
 def kolmogorovSmirnov(Values):
-    print('\n#### KOLMOGOROV-SMIRNOV ####')
+    print('\nTest de Bondad Kolmogorov-Smirnov: ')
     media, desviacion = ss.norm.fit(Values)
  
     kstest = ss.kstest(Values,"norm",args=(media,desviacion))
  
     significacion = (1-kstest.pvalue/100)
-    print('NIVEL DE SIGNIFICACION: ', significacion,'%')
+    print('Nivel de Significación: ', significacion,'%')
  
     if kstest.pvalue < 0.01:
         print('LOS NUMEROS SON INDEPENDIENTES.\n')
     else:
         print('LOS NUMEROS NO SON INDEPENDIENTES.\n')
 
-def Poker(Values):
-    lista = []
-    TD=0
-    P1=0
-    P2=0
-    TP=0
-    T=0
-    P=0
-    Q=0
- 
-    for i in Values:
-        resultado = np.around(i,5)
-        lista.append(resultado)
- 
-    for i in lista:
-        numero=i
-        decimal = str(numero-int(numero))[2:].zfill(5)
-        
-        A=None
-        B=None
-        C=None
-        D=None
-        E=None
-        
-        decimal_resultado = []
-        counter = 0
-        for j in decimal:
-            counter = counter+1
-            if counter <= 5:
-                if (A!=None):
-                    if(j==A):
-                        decimal_resultado.append('A')
-                        continue
-                else:
-                    A=j
-                    decimal_resultado.append('A')
-                    continue
-                
-                if (B!=None):
-                    if(j==B):
-                        decimal_resultado.append('B')
-                        continue
-                else:
-                    B=j
-                    decimal_resultado.append('B')
-                    continue
- 
-                if (C!=None):
-                    if(j==C):
-                        decimal_resultado.append('C')
-                        continue
-                else:
-                    C=j
-                    decimal_resultado.append('C')
-                    continue
- 
-                if (D!=None):
-                    if(j==D):
-                        decimal_resultado.append('D')
-                        continue
-                else:
-                    D=j
-                    decimal_resultado.append('D')
-                    continue
- 
-                if (E!=None):
-                    if(j==E):
-                        decimal_resultado.append('E')
-                        continue
-                else:
-                    E=j
-                    decimal_resultado.append('E')
-                    continue
-        
-        cant_A = 0
-        cant_B = 0
-        cant_C = 0
-        cant_D = 0
-        cant_E = 0
- 
-        for x in decimal_resultado:
-            if(x=='A'):
-                cant_A = cant_A+1
-            elif(x=='B'):
-                cant_B = cant_B+1
-            elif(x=='C'):
-                cant_C = cant_C+1
-            elif(x=='D'):
-                cant_D = cant_D+1
-            elif(x=='E'):
-                cant_E = cant_E+1
- 
-        frecuencia = [cant_A,cant_B,cant_C,cant_D,cant_E]        
- 
-        frecuencia.sort(reverse=True)
- 
-        
-        if(frecuencia==[1,1,1,1,1]):
-            #TODOS DISTINTOS
-            TD = TD+1
-        elif(frecuencia==[2,1,1,1,0]):
-            #PAR
-            P1 = P1+1
-        elif(frecuencia==[2,2,1,0,0]):
-            #2 PARES
-            P2 = P2+1
-        elif(frecuencia==[3,1,1,0,0]):
-            #TERCIA
-            T = T+1
-        elif(frecuencia==[3,2,0,0,0]):
-            #TERCIA Y PAR
-            TP = TP+1
-        elif(frecuencia==[4,1,0,0,0]):
-            #POKER
-            P = P+1
-        elif(frecuencia==[5,0,0,0,0]):
-            #QUINTINA
-            Q = Q+1        
-    
-    probabilidades = [0.3025,0.504,0.108,0.009,0.072,0.0045,0.0001]
-    ei=[]
- 
-    for i in probabilidades:
-        resultado = i*100
-        ei.append(np.round(resultado,2))
-        
-    oi = [TD,P1,P2,T,TP,P,Q]
-    print('Ei: ', ei)
-    print('Oi: ', oi)
- 
-    grados_libertad = int(input('Ingrese grados de libertad: '))
-    chicuadrado(oi, ei, grados_libertad)
-
 def Test(Values):
     TestCorridas(Values)
     TestArribaAbajo(Values)
     TestBondad(Values)
-    Poker(Values)
 
 main()

@@ -180,8 +180,14 @@ def TestCorridas(Values):
     n = len(x)
     media = (2*n-1)/3
     desviacion = math.sqrt((16*n-29)/90)
-    z = (a-media)/desviacion
-    print("Z <= "+ str(z))        
+    z = abs((a-media)/desviacion)
+
+    if z < 1.96:
+        print('Z = {0} < {1}'.format(round(z,5), 1.96))
+        print('Los números son independientes.')
+    else:
+        print('Z = {0} > {1}'.format(round(z,5), 1.96))
+        print('Los números NO son independientes.')
 
 def TestArribaAbajo(Values):
     print("\nTest de Corrida Arriba/Abajo: ")
@@ -218,12 +224,17 @@ def TestArribaAbajo(Values):
     n = contmas+contmenos
     media = ((2*contmenos*contmas)/(contmas+contmenos))+1
     desviacion = math.sqrt(((2*contmenos*contmas*(2*contmas*contmenos-n))/((n**2)*(n-1))))
-    z = (corridas-media)/desviacion
-    print("Z <= " + str(z) )
+    z = abs((corridas-media)/desviacion)
+
+    if z < 1.96:
+        print('Z = {0} < {1}'.format(round(z,5), 1.96))
+        print('Los números son independientes.')
+    else:
+        print('Z = {0} > {1}'.format(round(z,5), 1.96))
+        print('Los números NO son independientes.')
 
 def TestBondad(Values):
     m=int(np.sqrt(Constant.CANT_VALORES))
-    print('M: ',m)
     
     intervalos=[]
  
@@ -255,15 +266,14 @@ def chicuadrado(oi,ei, grados_libertad):
  
     resultado_chi2=np.sum(sumatoria)
  
-    print('Z <= ',resultado_chi2)
- 
     tabla_chi2=ss.chi2.isf(0.05, grados_libertad)
- 
-    print('{0} < {1}'.format(resultado_chi2, tabla_chi2))
-    if (resultado_chi2 < tabla_chi2):
-        print('Los números son independientes.\n')
+
+    if resultado_chi2 < tabla_chi2:
+        print('Z = {0} < {1}'.format(round(resultado_chi2,5), round(tabla_chi2,5)))
+        print('Los números son independientes.')
     else:
-        print('Los números No son independientes.\n')
+        print('Z = {0} > {1}'.format(round(resultado_chi2,5), round(tabla_chi2,5)))
+        print('Los números NO son independientes.')
 
 def kolmogorovSmirnov(Values):
     print('\nTest de Bondad Kolmogorov-Smirnov: ')
@@ -275,9 +285,11 @@ def kolmogorovSmirnov(Values):
     print('Nivel de Significación: ', significacion,'%')
  
     if kstest.pvalue < 0.01:
-        print('LOS NUMEROS SON INDEPENDIENTES.\n')
+        print('Z = {0} < {1}'.format(round(kstest.pvalue,5), 0.01))
+        print('Los números son independientes.')
     else:
-        print('LOS NUMEROS NO SON INDEPENDIENTES.\n')
+        print('Z = {0} > {1}'.format(round(kstest.pvalue,5), 0.01))
+        print('Los números NO son independientes.')
 
 def Test(Values):
     TestCorridas(Values)

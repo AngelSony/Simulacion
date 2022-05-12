@@ -164,7 +164,7 @@ def lowess(x, y, f=1./3.):
         y_stderr[place] = np.sqrt(sigma2 * A[i].dot(np.linalg.inv(ATA)).dot(A[i]))
     return y_sm, y_stderr
 
-def TestCorridas(Values):
+def TestSubeBaja(Values):
     print("\nTest de Corridas Sube/Baja: ")
     x = []
     a = 1
@@ -292,7 +292,7 @@ def kolmogorovSmirnov(Values):
         print('Los números NO son independientes.')
 
 def Test(Values):
-    TestCorridas(Values)
+    TestSubeBaja(Values)
     TestArribaAbajo(Values)
     TestBondad(Values)
 

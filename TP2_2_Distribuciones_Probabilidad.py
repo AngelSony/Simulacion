@@ -1,8 +1,10 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
+import random as rn
 
 sns.set_style("white")
-Dist = ["Uniforme", "Exponencial", "Gamma", "Normal", "Pascal", "Binomial", "Hipergeom閠rica", "Poisson", "Emp韗ica Discreta"]
+Dist = ["Uniforme", "Exponencial", "Gamma", "Normal", "Pascal", "Binomial", "Hipergeom茅trica", "Poisson", "Empir铆ca Discreta"]
 
 def uniform(a, b):
     r = rn.random()
@@ -27,20 +29,20 @@ def normal(mu=0, sigma=1):
 
 def Generar(opcion):
     data = []
-    print(Dist[opcion])
+    print(Dist[opcion-1])
     for i in range(10000):
         if opcion == 1:
             data.append(uniform(3,8))
         elif opcion == 2:
             data.append(exp(0.8))
         #elif opcion == 3:
-            #Distribuci髇 Gamma
+            #Distribuci贸n Gamma
         #elif opcion == 4:
-            #Ditribuci髇 Normal
+            #Ditribuci贸n Normal
     return data
 
 def Graficar(data):
-    sns.distplot(data, kde=False)
+    sns.displot(data, kde=False)
     plt.show()
 
 def main():
@@ -55,20 +57,15 @@ def main():
 
 def menu():
     os.system("cls")
-    print("Seleccione distribuci髇:")
+    print("Seleccione distribuci贸n:")
     for i in range(9):
-        print(str(i+1) + Dist[i])
+        print(str(i+1) + ") - " + Dist[i])
     while True:
-        op = int(input("Opci髇:  "))
+        op = int(input("Opci贸n:  "))
         if op < 0 or op > 9:
-            print("Debe ingresar un n鷐ero comprendido entre 0 y 9")
+            print("Debe ingresar un n煤mero comprendido entre 0 y 9")
         else:
             break
     return op
         
-if __name__ == "__main__":
-    data = []
-    for i in range(10000):
-        data.append(uniform(3,8))
-    sns.distplot(data, kde=False)
-    plt.show()
+main()

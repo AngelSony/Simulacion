@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import math
 import seaborn as sns
 import os
 import random as rn
@@ -15,7 +16,7 @@ def exp(alpha):
     r = rn.random()
     return -np.log(r)/alpha
 
-def normal(mu=0, sigma=1):
+def normal(mu, sigma):
     """Box-Muller method"""
     s = 0
     while s == 0 or s >= 1:
@@ -38,8 +39,9 @@ def Generar(opcion):
             data.append(exp(0.8))
         #elif opcion == 3:
             #Distribución Gamma
-        #elif opcion == 4:
-            #Ditribución Normal
+        elif opcion == 4:
+            u, v = normal(0, 1)
+            data.append(u + v)
     return data
 
 def Graficar(data):

@@ -43,6 +43,22 @@ def binomial(n, p):
         x += bernoulli(p)
     return x
 
+def hypergeometric(N,K,n):
+    x = 0
+    c = N - K
+    k = K
+
+    for i in range(n-1):
+        r = rn.random()
+        if r <= k/N:
+            x += 1
+            k -= 1
+        else:
+            c -= 1
+        N -= 1
+
+    return x
+
 def Generar(opcion):
     data = []
     print(Dist[opcion-1])
@@ -60,11 +76,13 @@ def Generar(opcion):
             #Distribución Pascal
         elif opcion == 6:
             data.append(binomial(6,0.5))
+        elif opcion == 7:
+            data.append(hypergeometric(500,50,100))
 
     return data
 
 def Graficar(data, opcion):
-    if(opcion == 6):
+    if opcion in [6,7]:
         discrete_plot(data)
     else:
         sns.displot(data, kde=False)

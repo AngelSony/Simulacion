@@ -29,6 +29,20 @@ def normal(mu, sigma):
     z2 = v * k * sigma + mu
     return z1, z2
 
+def bernoulli(p):
+    r = rn.random()
+    if r < p:
+        return 1
+    else:
+        return 0
+
+def binomial(n, p):
+    """n trials of a Bernoulli event"""
+    x = 0
+    for i in range(n):
+        x += bernoulli(p)
+    return x
+
 def Generar(opcion):
     data = []
     print(Dist[opcion-1])
@@ -42,10 +56,18 @@ def Generar(opcion):
         elif opcion == 4:
             u, v = normal(0, 1)
             data.append(u + v)
+        #elif opcion == 5:
+            #Distribución Pascal
+        elif opcion == 6:
+            data.append(binomial(6,0.5))
+
     return data
 
-def Graficar(data):
-    sns.displot(data, kde=False)
+def Graficar(data, opcion):
+    if(opcion == 6):
+        discrete_plot(data)
+    else:
+        sns.displot(data, kde=False)
     plt.show()
 
 def main():
@@ -54,7 +76,7 @@ def main():
         os.system("cls")
         if(opcion != 0):
             data = Generar(opcion)
-            Graficar(data)
+            Graficar(data, opcion)
         else:
             break
 
@@ -70,5 +92,9 @@ def menu():
         else:
             break
     return op
+
+def discrete_plot(data, alpha=.5):
+    hist, edges = np.histogram(data,bins=np.arange(min(data),max(data)+2)-0.5)
+    return plt.bar(edges[:-1], hist, align="edge", ec="k", alpha=alpha)
         
 main()

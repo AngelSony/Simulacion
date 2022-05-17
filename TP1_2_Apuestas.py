@@ -4,7 +4,7 @@ import os
 
 class Constant:
     NROTIRADAS = 10000
-    MUESTRAS = 100
+    MUESTRAS = 5
     APUESTAINICIAL = 1
 
 colores = ["red", "green", "yellow", "blue", "purple", "cyan"]

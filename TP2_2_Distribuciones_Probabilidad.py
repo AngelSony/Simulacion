@@ -5,8 +5,13 @@ import os
 import random as rn
 import numpy as np
 
-
 Dist = ["Uniforme", "Exponencial", "Gamma", "Normal", "Pascal", "Binomial", "Hipergeométrica", "Poisson", "Empiríca Discreta"]
+
+class Pascal:
+    m = 2**32
+    a = 22695477
+    c = 1
+    x = 0
 
 def uniform(a, b):
     r = rn.random()
@@ -15,6 +20,14 @@ def uniform(a, b):
 def exp(alpha):
     r = rn.random()
     return -np.log(r)/alpha
+
+def gamma(k, a):
+    tr = 1.0
+    for i in range(k):
+        r = lcg()
+        tr = tr * r
+    x = -math.log(tr) / a
+    return x
 
 def normal(mu, sigma):
     """Box-Muller method"""
@@ -28,6 +41,19 @@ def normal(mu, sigma):
     z1 = u * k * sigma + mu
     z2 = v * k * sigma + mu
     return z1, z2
+
+def lcg():
+    Pascal.x = (Pascal.a * Pascal.x + Pascal.c) % Pascal.m 
+    return (Pascal.x / Pascal.m)
+
+def pascal(k,q):
+    tr = 1.0
+    qr = math.log(q)
+    for i in range(k):
+        r = lcg()
+        tr = tr * r
+    x = math.log(tr)/qr
+    return x
 
 def bernoulli(p):
     r = rn.random()
@@ -82,18 +108,18 @@ def empirical_discrete(fx):
 def Generar(opcion):
     data = []
     print(Dist[opcion-1])
-    for i in range(100000):
+    for i in range(1500):
         if opcion == 1:
             data.append(uniform(3,8))
         elif opcion == 2:
             data.append(exp(0.8))
-        #elif opcion == 3:
-            #Distribución Gamma
+        elif opcion == 3:
+            data.append(gamma(5,1))
         elif opcion == 4:
             u, v = normal(0, 1)
             data.append(u + v)
-        #elif opcion == 5:
-            #Distribución Pascal
+        elif opcion == 5:
+            data.append(pascal(2, 0.8))
         elif opcion == 6:
             data.append(binomial(6,0.5))
         elif opcion == 7:

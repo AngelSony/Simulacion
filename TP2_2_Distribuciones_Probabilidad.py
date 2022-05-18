@@ -5,7 +5,7 @@ import os
 import random as rn
 import numpy as np
 
-sns.set_style("white")
+
 Dist = ["Uniforme", "Exponencial", "Gamma", "Normal", "Pascal", "Binomial", "Hipergeométrica", "Poisson", "Empiríca Discreta"]
 
 def uniform(a, b):
@@ -59,10 +59,30 @@ def hypergeometric(N,K,n):
 
     return x
 
+def poisson(alpha):
+    """Poisson process"""
+    x = 0
+    p = 1
+
+    while p >= math.exp(-alpha):
+        r = rn.random()
+        p *= r
+        x += 1
+
+    return x
+
+def empirical_discrete(fx):
+    """ Discrete custom categorization"""
+    cum = np.cumsum(fx)  # Cumulative distribution from density function
+    r = rn.random()
+    for i in range(len(cum)):
+        if r < cum[i]:
+            return i
+
 def Generar(opcion):
     data = []
     print(Dist[opcion-1])
-    for i in range(10000):
+    for i in range(100000):
         if opcion == 1:
             data.append(uniform(3,8))
         elif opcion == 2:
@@ -78,11 +98,16 @@ def Generar(opcion):
             data.append(binomial(6,0.5))
         elif opcion == 7:
             data.append(hypergeometric(500,50,100))
+        elif opcion == 8:
+            data.append(poisson(7))
+        elif opcion == 9:
+            data.append(empirical_discrete([.11, .12, .09, .08, .12, .1, .09, .09, .1, .1]))
 
     return data
 
 def Graficar(data, opcion):
-    if opcion in [6,7]:
+    sns.set_style("white")
+    if opcion in [6,7,8,9]:
         discrete_plot(data)
     else:
         sns.displot(data, kde=False)

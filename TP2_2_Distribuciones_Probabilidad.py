@@ -59,7 +59,15 @@ def Graficar(data, opcion):
         for j in range(3):
             discrete_plot(data[j])
     else:
-        sns.displot(data, kde=False)
+        sns.displot(data, kde=False, legend=False)
+    Leyenda = []
+    for j in range(2,-1,-1):
+        if opcion == 1:
+            Leyenda.append('a = '+str(Valores.Uniforme[j][0])+', b = '+str(Valores.Uniforme[j][1]))
+        if opcion == 2:
+            Leyenda.append('α = '+str(Valores.Uniforme[j]))
+
+    plt.legend(Leyenda)
     plt.show()
 
 def main():

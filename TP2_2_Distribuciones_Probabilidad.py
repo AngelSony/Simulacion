@@ -61,13 +61,32 @@ def Graficar(data, opcion):
     else:
         sns.displot(data, kde=False, legend=False)
     Leyenda = []
-    for j in range(2,-1,-1):
+    for j in range(3):
         if opcion == 1:
             Leyenda.append('a = '+str(Valores.Uniforme[j][0])+', b = '+str(Valores.Uniforme[j][1]))
-        if opcion == 2:
-            Leyenda.append('α = '+str(Valores.Uniforme[j]))
-
-    plt.legend(Leyenda)
+        elif opcion == 2:
+            Leyenda.append('α = '+str(Valores.Exponencial[j]))
+        elif opcion == 3:
+            Leyenda.append('k = '+str(Valores.Gamma[j][0])+', θ = '+str(Valores.Gamma[j][1]))
+        elif opcion == 4:
+            Leyenda.append('µ = '+str(Valores.Normal[j][0]*2)+', σ = '+str(Valores.Normal[j][1]))
+        elif opcion == 5:
+            Leyenda.append('r = '+str(Valores.Pascal[j][0])+', p = '+str(Valores.Pascal[j][1]))
+        elif opcion == 6:
+            Leyenda.append('n = '+str(Valores.Binomial[j][0])+', p = '+str(Valores.Binomial[j][1]))
+        elif opcion == 7:
+            Leyenda.append('N = '+str(Valores.Hipergeometrica[j][0])+', K = '+str(Valores.Hipergeometrica[j][1])+', n = '+str(Valores.Hipergeometrica[j][2]))
+        elif opcion == 8:
+            Leyenda.append('λ = '+str(Valores.Poisson[j]))
+        elif opcion == 9:
+            Leyenda.append('f(x) = '+str(Valores.Empirica[j]))
+    plt.suptitle('Distribución ' + Valores.Distribuciones[opcion-1])
+    plt.ylabel('Frecuencia Absoluta')
+    plt.xlabel('Valor de Variable X')
+    if opcion in [1,2,3,4]:
+        plt.legend([Leyenda[i] for i in range(2,-1,-1)])
+    else:
+        plt.legend(Leyenda)
     plt.show()
 
 def main():

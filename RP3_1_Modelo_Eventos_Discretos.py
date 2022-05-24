@@ -1,15 +1,18 @@
 import numpy as np
 import math
 
-UValues = [.5121,.8116,.6717,.1901,.5184,.6467,.8954,.3884,.0279,.8365]
-Alfa = .7
-Beta = .66
-ArrivalTimes = []
-DepartureTimes = []
-EventTimes = []
-
+class Const:
+    UValues = [.5121,.8116,.6717,.1901,.5184,.6467,.8954,.3884,.0279,.8365]
+    Alfa = .7
+    Beta = .66
 
 def Main_Program():
+    global ArrivalTimes 
+    global DepartureTimes
+    global EventTimes
+    ArrivalTimes = []
+    DepartureTimes = []
+    EventTimes = []
     SystemState = ['Free']
 
     DispachedClients = [0]
@@ -27,9 +30,9 @@ def Main_Program():
     #Report_Generator()
 
 def Initialization_Routine():
-    for Value in UValues:
-        ArrivalTimes.append(truncate(-1 * Alfa * np.log(Value),4))
-        DepartureTimes.append(truncate(-1 * Beta * np.log(Value),4))
+    for Value in Const.UValues:
+        ArrivalTimes.append(truncate(-1 * Const.Alfa * np.log(Value),4))
+        DepartureTimes.append(truncate(-1 * Const.Beta * np.log(Value),4))
     print("ArrivalTimes:")
     print(ArrivalTimes)
     print("DepartureTimes:")
